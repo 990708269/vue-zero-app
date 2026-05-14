@@ -1,0 +1,32 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn",
+    "style": "off"
+  },
+  "plugins": ["typescript", "unicorn", "jest"],
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "node": true,
+    "jest": true
+  },
+  "globals": {},
+  "ignorePatterns": [
+    "dist/",
+    "build/",
+    "coverage/",
+    "node_modules/",
+    "**/*.generated.ts",
+    "**/*.min.js"
+  ],
+  "rules": {
+    "no-unused-vars": "off",
+    "no-debugger": "off"
+  },
+  "options": {
+    "denyWarnings": false
+  }
+}

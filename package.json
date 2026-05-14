@@ -33,11 +33,12 @@
     "vue-tsc": "^3.2.8"
   },
   "lint-staged": {
-    "*.{js,ts,vue,jsx,tsx,mjs,cjs,mts,cts}": [
-      "oxfmt"
+    "*.{js,jsx,ts,tsx,mjs,cjs,vue}": [
+      "oxfmt --no-error-on-unmatched-pattern",
+      "npm run lint:fix"
     ],
-    "*.{json,md,css,scss,less,html}": [
-      "oxfmt"
+    "*.{json,md,yml,yaml}": [
+      "oxfmt --no-error-on-unmatched-pattern"
     ]
   }
 }
