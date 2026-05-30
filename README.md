@@ -1,8 +1,10 @@
 # vue-zero-app
+
 从零搭建的项目
 
 # 关于部署
-+ 项目已通过 gh-pages 部署到 https://990708269.github.io/vue-zero-app/
+
+- 项目已通过 gh-pages 部署到 https://990708269.github.io/vue-zero-app/
 
 # Vue 3 + TypeScript + Vite
 
@@ -10,4 +12,4 @@ This template should help get you started developing with Vue 3 and TypeScript i
 
 Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
 
-### 
+###

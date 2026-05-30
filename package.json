@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "deploy": "npm run build && gh-pages -d dist",
     "postinstall": "husky install",
-    "pre-commit:init": "node -e \"require('fs').existsSync('.husky') || require('fs').mkdirSync('.husky');require('fs').writeFileSync('.husky/pre-commit','#!/usr/bin/env sh\\n. \\\"$(dirname -- \\\"$0\\\")/_/husky.sh\\\"\\n\\nnpx lint-staged\\n');process.platform === 'win32' || require('child_process').execSync('chmod +x .husky/pre-commit')\"",
+    "pre-commit:init": "node -e \"require('fs').mkdirSync('.husky',{recursive:true});require('fs').writeFileSync('.husky/pre-commit','npx lint-staged');\"",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "lint": "oxlint",
