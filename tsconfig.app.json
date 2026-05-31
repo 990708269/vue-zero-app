@@ -2,13 +2,29 @@
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-    "types": ["vite/client"],
-
+    "types": ["vite/client", "@types/node"],
     /* Linting */
     // "noUnusedLocals": false,
     // "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "ignoreDeprecations": "6.0",
+    // 其他配置保留...
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"]
+  // 新增这一段，放在根层级
+  "vueCompilerOptions": {
+    "plugins": ["unocss/volar"]
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "./components.d.ts",
+    "./auto-imports.d.ts",
+    "./env.d.ts"
+  ]
 }

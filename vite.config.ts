@@ -3,11 +3,14 @@ import vue from '@vitejs/plugin-vue'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import path from 'path'
+import UnoCSS from 'unocss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
+    UnoCSS(),
     AutoImport({
       resolvers: [ElementPlusResolver()],
       imports: ['vue', 'vue-router'],
@@ -17,4 +20,10 @@ export default defineConfig({
     }),
   ],
   base: '/vue-zero-app/',
+  resolve: {
+    alias: {
+      // 配置别名 @ 指向 src 目录
+      '@': path.resolve(__dirname, 'src'),
+    },
+  },
 })
