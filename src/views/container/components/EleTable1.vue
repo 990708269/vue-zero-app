@@ -1,38 +1,56 @@
 <template>
-  <el-table
-    :data="tableData"
-    style="width: 100%"
-    border
-    height="100%"
-    :cell-class-name="cellClassName"
-  >
-    <el-table-column label="任务1" prop="t1" width="100"></el-table-column>
-    <el-table-column label="任务2" prop="t2" width="100"></el-table-column>
-    <el-table-column label="任务3" prop="t3" width="100"></el-table-column>
-    <el-table-column
-      v-for="i in 12"
-      :label="`${i}月`"
-      :key="i"
-      min-width="90"
-      class-name="month-col"
-    >
+  <el-table :data="tableData" style="width: 100%" border height="100%">
+    <el-table-column label="任务1" prop="t1" width="100" />
+    <el-table-column label="任务2" prop="t2" width="100" />
+    <el-table-column label="任务3" prop="t3" width="100" />
+
+    <!-- 年度时间轴列：整条绝对定位渲染，不再按月拆分 -->
+    <el-table-column min-width="1080">
+      <template #header>
+        <div class="timeline-header">
+          <span v-for="i in 12" :key="i" class="month-tick">{{ i }}月</span>
+        </div>
+      </template>
       <template #default="{ row }">
-        <div class="month-cell">
-          <div
-            v-for="child in getMonthSegments(row as TableDataType, i)"
-            :key="child.title"
-            class="month-bar"
-            :style="{
-              left: child.leftPercent + '%',
-              width: child.widthPercent + '%',
-            }"
-            :title="`${child.title}: ${child.start} ~ ${child.end}`"
-          ></div>
+        <div class="timeline-row">
+          <!-- 月份网格背景线 -->
+          <div class="month-grid">
+            <div v-for="i in 12" :key="i" class="grid-segment" />
+          </div>
+          <!-- 任务条层 -->
+          <div class="bars-layer">
+            <el-tooltip
+              v-for="child in getTaskBars(row as TableDataType)"
+              :key="child.title"
+              placement="top"
+              :show-after="200"
+              :hide-after="0"
+            >
+              <template #content>
+                <div class="tooltip-content">
+                  <div class="tooltip-title">{{ child.title }}</div>
+                  <div class="tooltip-date">
+                    {{ child.start }} ~ {{ child.end }}
+                  </div>
+                </div>
+              </template>
+              <div
+                class="task-bar"
+                :style="{
+                  left: child.leftPercent + '%',
+                  width: child.widthPercent + '%',
+                }"
+              >
+                <span class="task-bar-text">{{ child.title }}</span>
+              </div>
+            </el-tooltip>
+          </div>
         </div>
       </template>
     </el-table-column>
-    <el-table-column label="单位1" prop="d1" width="100"></el-table-column>
-    <el-table-column label="组1" prop="g1" width="100"></el-table-column>
+
+    <el-table-column label="单位1" prop="d1" width="100" />
+    <el-table-column label="组1" prop="g1" width="100" />
   </el-table>
 </template>
 
@@ -47,7 +65,8 @@ interface TaskChild {
   end: string
 }
 
-interface MonthSegment {
+/** 基于全年时间轴的任务条数据 */
+interface TaskBar {
   title: string
   start: string
   end: string
@@ -55,7 +74,6 @@ interface MonthSegment {
   widthPercent: number
 }
 
-// 表格数据类型
 interface TableDataType {
   t1: string
   t2: string
@@ -63,140 +81,187 @@ interface TableDataType {
   d1: string
   g1: string
   taskChildren: TaskChild[]
-  [key: string]: any
 }
 
 const tableData = ref<TableDataType[]>([])
 
+/** 生成多样化的模拟数据，验证跨月、重叠、超长名称省略等场景 */
+function generateMockData(): TableDataType[] {
+  const mockChildren: TaskChild[][] = [
+    [{ title: '需求评审', start: '2026-1-10', end: '2026-1-25' }],
+    [{ title: '前端开发', start: '2026-3-1', end: '2026-6-30' }],
+    [
+      { title: '后端接口联调', start: '2026-4-15', end: '2026-6-15' },
+      { title: '性能优化专项', start: '2026-7-1', end: '2026-8-20' },
+    ],
+    [{ title: 'UI走查', start: '2026-8-1', end: '2026-8-5' }],
+    [{ title: '提测修复阶段', start: '2026-9-1', end: '2026-10-15' }],
+    [
+      { title: '灰度发布验证', start: '2026-11-1', end: '2026-11-14' },
+      { title: '全量上线', start: '2026-11-20', end: '2026-12-5' },
+    ],
+    [{ title: '数据分析平台搭建', start: '2026-2-1', end: '2026-12-31' }],
+    [{ title: '安全审计', start: '2026-5-10', end: '2026-5-25' }],
+    [
+      {
+        title: '这是一个很长的子任务名称用来测试省略号效果',
+        start: '2026-3-15',
+        end: '2026-4-28',
+      },
+    ],
+    [{ title: '年底复盘总结', start: '2026-12-10', end: '2026-12-28' }],
+  ]
+
+  return mockChildren.map((children, i) => ({
+    t1: `模块-${i + 1}`,
+    t2: `迭代-${i + 1}`,
+    t3: `负责人${String.fromCharCode(65 + i)}`,
+    d1: `部门${(i % 3) + 1}`,
+    g1: `组${(i % 4) + 1}`,
+    taskChildren: children,
+  }))
+}
+
 onMounted(() => {
-  for (let i = 0; i < 10; i++) {
-    const data: TableDataType = {
-      t1: `任务1-${i + 1}`,
-      t2: `任务2-${i + 1}`,
-      t3: `任务3-${i + 1}`,
-      d1: `单位-${i + 1}`,
-      g1: `组-${i + 1}`,
-      taskChildren: [
-        {
-          title: '子任务1',
-          start: '2026-4-15',
-          end: '2026-6-15',
-        },
-      ],
-    }
-    for (let j = 1; j <= 12; j++) {
-      data[`${j}月`] = ''
-    }
-    tableData.value.push(data)
-  }
+  tableData.value = generateMockData()
 })
 
 /**
- * 计算某一行的某个月份中，每个子任务占据的天数比例（精确到天）
+ * 基于全年时间轴计算每个子任务的位置与宽度
+ * leftPercent / widthPercent 相对于整年天数（365/366）
  */
-function getMonthSegments(
-  row: TableDataType,
-  monthIndex: number,
-): MonthSegment[] {
+function getTaskBars(row: TableDataType): TaskBar[] {
   if (!row.taskChildren || row.taskChildren.length === 0) return []
 
-  const monthStart = dayjs(`${year.value}-${monthIndex}-01`)
-  const monthEnd = monthStart.endOf('month')
-  const daysInMonth = monthStart.daysInMonth()
+  const yearStart = dayjs(`${year.value}-01-01`)
+  const yearEnd = dayjs(`${year.value}-12-31`)
+  const daysInYear = yearEnd.diff(yearStart, 'day') + 1
 
-  const segments: MonthSegment[] = []
-
-  for (const child of row.taskChildren) {
+  return row.taskChildren.map((child) => {
     const childStart = dayjs(child.start)
     const childEnd = dayjs(child.end)
 
-    // 子任务与当前月份无交集，跳过
-    if (childEnd.isBefore(monthStart) || childStart.isAfter(monthEnd)) {
-      continue
-    }
+    // 钳制到年度范围
+    const segStart = childStart.isAfter(yearStart) ? childStart : yearStart
+    const segEnd = childEnd.isBefore(yearEnd) ? childEnd : yearEnd
 
-    // 取交集区间
-    const segStart = childStart.isAfter(monthStart) ? childStart : monthStart
-    const segEnd = childEnd.isBefore(monthEnd) ? childEnd : monthEnd
+    const leftPercent = (segStart.diff(yearStart, 'day') / daysInYear) * 100
+    const widthPercent = ((segEnd.diff(segStart, 'day') + 1) / daysInYear) * 100
 
-    // 计算该区间占整月天数的比例
-    const segStartDay = segStart.date()
-    // const segEndDay = segEnd.date()
-
-    // leftPercent: 区间起点在月中的位置（0% = 1号，100% = 最后一天）
-    const leftPercent = ((segStartDay - 1) / daysInMonth) * 100
-    // widthPercent: 区间跨度（包含起止日当天）
-    const spanDays = segEnd.diff(segStart, 'day') + 1
-    const widthPercent = (spanDays / daysInMonth) * 100
-
-    segments.push({
+    return {
       title: child.title,
-      start: segStart.format('YYYY-MM-DD'),
-      end: segEnd.format('YYYY-MM-DD'),
+      start: child.start,
+      end: child.end,
       leftPercent,
       widthPercent,
-    })
-  }
-
-  return segments
-}
-
-/**
- * 判断某一行的某个月份，是否有子任务跨越到该月最后一天（即还会延续到下个月）
- * 条件：子任务与该月有交集，且子任务结束日期在该月月末之后
- */
-function monthEndsOnTask(row: TableDataType, monthIndex: number): boolean {
-  if (!row.taskChildren || row.taskChildren.length === 0) return false
-
-  const monthStart = dayjs(`${year.value}-${monthIndex}-01`)
-  const monthEnd = monthStart.endOf('month')
-
-  return row.taskChildren.some((child) => {
-    const childStart = dayjs(child.start)
-    const childEnd = dayjs(child.end)
-    // 月末被包含在子任务区间内：开始 ≤ 月末 < 结束
-    return !childStart.isAfter(monthEnd) && childEnd.isAfter(monthEnd)
-  })
-}
-
-/**
- * cell-class-name：月份列中如果任务跨越到月末，添加 no-border-right 类
- */
-function cellClassName({ row, column }: { row: TableDataType; column: any }) {
-  const match = column.label?.match(/^(\d+)月$/)
-  if (match) {
-    const monthIndex = Number.parseInt(match[1])
-    if (monthEndsOnTask(row, monthIndex)) {
-      return 'no-border-right'
     }
-  }
-  return ''
+  })
 }
 </script>
 
 <style scoped lang="less">
-:deep(.cell) {
-  padding: 0;
+/* ========= 列头：月份刻度 ========= */
+.timeline-header {
+  display: flex;
+  width: 100%;
 }
 
-:deep(.no-border-right) {
-  border-right: none !important;
+.month-tick {
+  flex: 1;
+  text-align: center;
+  font-size: 13px;
+  border-right: 1px solid var(--el-border-color-lighter);
+
+  &:last-child {
+    border-right: none;
+  }
 }
 
-.month-cell {
-  @apply relative w-full h-full min-h-50px;
+/* ========= 每行：时间轴容器 ========= */
+.timeline-row {
+  position: relative;
+  width: 100%;
+  height: 42px;
+  box-sizing: border-box;
 }
 
-.month-bar {
+/* 月份网格背景虚线 */
+.month-grid {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  pointer-events: none;
+}
+
+.grid-segment {
+  flex: 1;
+  border-right: 1px solid var(--el-border-color-lighter);
+
+  &:last-child {
+    border-right: none;
+  }
+}
+
+/* 任务条层 */
+.bars-layer {
+  position: absolute;
+  inset: 4px 0;
+}
+
+/* 单条任务条 */
+.task-bar {
   position: absolute;
   top: 0;
   height: 100%;
-  background-color: #409eff;
-  opacity: 0.6;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #409eff, #66b1ff);
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition:
+    box-shadow 0.2s,
+    filter 0.2s;
+  min-width: 4px;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(64, 158, 255, 0.45);
+    filter: brightness(1.08);
+    z-index: 2;
+  }
+}
+
+/* 条内文字：单行超出省略号 */
+.task-bar-text {
+  color: #fff;
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: none;
+}
+
+/* Tooltip 内容 */
+.tooltip-content {
+  font-size: 13px;
+  line-height: 1.5;
+
+  .tooltip-title {
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .tooltip-date {
+    color: var(--el-text-color-secondary);
+    font-size: 12px;
+  }
 }
 </style>
 
 <style lang="less">
+/* 去掉全局表格单元格的默认内边距，让时间轴占满 */
 .el-table td.el-table__cell {
   padding: 0 !important;
   box-sizing: border-box;
