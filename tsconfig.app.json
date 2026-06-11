@@ -8,6 +8,7 @@
     // "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
+    "lib": ["ES2023"],
     "ignoreDeprecations": "6.0",
     // 其他配置保留...
     "baseUrl": ".",
