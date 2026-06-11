@@ -1,5 +1,12 @@
 <template>
-  <el-table :data="displayData" style="width: 100%" border height="100%">
+  <el-table
+    :data="displayData"
+    :cell-style="{ padding: '0' }"
+    :header-cell-style="{ padding: '0' }"
+    style="width: 100%"
+    border
+    height="100%"
+  >
     <el-table-column label="任务1" prop="t1" width="100" align="center" />
     <el-table-column label="任务2" prop="t2" width="100" align="center" />
     <el-table-column label="任务3" prop="t3" width="100" align="center" />
@@ -462,15 +469,38 @@ const displayData = computed<DisplayRow[]>(() => {
   }
 }
 
-/* 穿透 Element Plus 表格单元格，去掉默认内边距 */
+/* 穿透 Element Plus 表格，去掉所有默认内边距 */
 :deep() {
-  .el-table td.el-table__cell,
-  .el-table th.el-table__cell {
-    padding: 0 !important;
-    box-sizing: border-box;
+  .el-table {
+    --el-table-cell-padding: 0px;
+    --el-table-header-cell-padding: 0px;
+    --el-table-row-padding: 0px;
 
-    .cell {
+    .el-table__header-wrapper,
+    .el-table__body-wrapper,
+    .el-table__footer-wrapper,
+    .el-table__inner-wrapper {
       padding: 0 !important;
+    }
+
+    .el-table__header,
+    .el-table__body {
+      padding: 0 !important;
+    }
+
+    tr {
+      padding: 0 !important;
+    }
+
+    th.el-table__cell,
+    td.el-table__cell {
+      padding: 0 !important;
+      box-sizing: border-box;
+
+      .cell {
+        padding: 0 !important;
+        line-height: normal;
+      }
     }
   }
 }
