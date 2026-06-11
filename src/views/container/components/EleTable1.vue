@@ -1,10 +1,10 @@
 <template>
-  <el-table :data="tableData" style="width: 100%" border height="100%">
-    <el-table-column label="任务1" prop="t1" width="100" />
-    <el-table-column label="任务2" prop="t2" width="100" />
-    <el-table-column label="任务3" prop="t3" width="100" />
+  <el-table :data="displayData" style="width: 100%" border height="100%">
+    <el-table-column label="任务1" prop="t1" width="100" align="center" />
+    <el-table-column label="任务2" prop="t2" width="100" align="center" />
+    <el-table-column label="任务3" prop="t3" width="100" align="center" />
 
-    <!-- 年度时间轴列：整条绝对定位渲染，不再按月拆分 -->
+    <!-- 年度时间轴列 -->
     <el-table-column min-width="1080">
       <template #header>
         <div class="timeline-header">
@@ -12,12 +12,15 @@
         </div>
       </template>
       <template #default="{ row }">
-        <div class="timeline-row">
-          <!-- 月份网格背景线 -->
+        <!-- 主行 -->
+        <div
+          v-if="row.rowType === 'main'"
+          class="timeline-row"
+          :style="{ height: getRowHeight(row as TableDataType) + 'px' }"
+        >
           <div class="month-grid">
             <div v-for="i in 12" :key="i" class="grid-segment" />
           </div>
-          <!-- 任务条层 -->
           <div class="bars-layer">
             <el-tooltip
               v-for="child in getTaskBars(row as TableDataType)"
@@ -39,6 +42,7 @@
                 :style="{
                   left: child.leftPercent + '%',
                   width: child.widthPercent + '%',
+                  top: child.lane * 32 + 4 + 'px',
                 }"
               >
                 <span class="task-bar-text">{{ child.title }}</span>
@@ -46,11 +50,56 @@
             </el-tooltip>
           </div>
         </div>
+        <!-- 子任务行 -->
+        <div
+          v-else
+          class="subtask-row"
+          :style="{
+            marginLeft: row.parentLeft + '%',
+            width: row.parentWidth + '%',
+          }"
+        >
+          <el-scrollbar max-height="50px">
+            <div
+              class="subtask-scroll-inner"
+              :style="{
+                height: (row.subtaskBars?.[0]?.totalLanes ?? 1) * 26 + 4 + 'px',
+              }"
+            >
+              <el-tooltip
+                v-for="bar in row.subtaskBars"
+                :key="bar.title"
+                placement="top"
+                :show-after="200"
+                :hide-after="0"
+              >
+                <template #content>
+                  <div class="tooltip-content">
+                    <div class="tooltip-title">{{ bar.title }}</div>
+                    <div class="tooltip-date">
+                      {{ bar.start }} ~ {{ bar.end }}
+                    </div>
+                  </div>
+                </template>
+                <div
+                  class="subtask-bar"
+                  :style="{
+                    left: bar.leftPercent + '%',
+                    width: bar.widthPercent + '%',
+                    top: bar.lane * 26 + 2 + 'px',
+                  }"
+                >
+                  <span class="task-bar-text">{{ bar.title }}</span>
+                </div>
+              </el-tooltip>
+            </div>
+          </el-scrollbar>
+        </div>
       </template>
     </el-table-column>
 
-    <el-table-column label="单位1" prop="d1" width="100" />
-    <el-table-column label="组1" prop="g1" width="100" />
+    <el-table-column label="单位1" prop="d1" width="100" align="center" />
+    <el-table-column label="组1" prop="g1" width="100" align="center" />
   </el-table>
 </template>
 
@@ -63,6 +112,7 @@ interface TaskChild {
   title: string
   start: string
   end: string
+  children?: TaskChild[]
 }
 
 /** 基于全年时间轴的任务条数据 */
@@ -72,6 +122,8 @@ interface TaskBar {
   end: string
   leftPercent: number
   widthPercent: number
+  lane: number
+  totalLanes: number
 }
 
 interface TableDataType {
@@ -83,16 +135,47 @@ interface TableDataType {
   taskChildren: TaskChild[]
 }
 
-const tableData = ref<TableDataType[]>([])
+/** 展开后的显示行：主行 / 子任务行 */
+interface DisplayRow extends TableDataType {
+  rowType: 'main' | 'subtask'
+  parentLeft?: number
+  parentWidth?: number
+  subtaskBars?: TaskBar[]
+}
+
+const rawData = ref<TableDataType[]>([])
 
 /** 生成多样化的模拟数据，验证跨月、重叠、超长名称省略等场景 */
-function generateMockData(): TableDataType[] {
+const generateMockData = (): TableDataType[] => {
   const mockChildren: TaskChild[][] = [
     [{ title: '需求评审', start: '2026-1-10', end: '2026-1-25' }],
-    [{ title: '前端开发', start: '2026-3-1', end: '2026-6-30' }],
     [
-      { title: '后端接口联调', start: '2026-4-15', end: '2026-6-15' },
-      { title: '性能优化专项', start: '2026-7-1', end: '2026-8-20' },
+      {
+        title: '前端开发',
+        start: '2026-3-1',
+        end: '2026-6-30',
+        children: [
+          { title: '框架搭建', start: '2026-3-1', end: '2026-3-20' },
+          { title: '页面开发', start: '2026-3-21', end: '2026-5-31' },
+          { title: '联调修复', start: '2026-6-1', end: '2026-6-25' },
+          { title: '代码评审', start: '2026-3-10', end: '2026-6-15' },
+        ],
+      },
+      { title: 'UI设计', start: '2026-4-10', end: '2026-5-20' },
+      { title: '联调测试', start: '2026-8-3', end: '2026-9-15' },
+    ],
+    [
+      {
+        title: '后端接口联调',
+        start: '2026-4-15',
+        end: '2026-7-31',
+        children: [
+          { title: '接口设计', start: '2026-4-15', end: '2026-4-30' },
+          { title: '服务端开发', start: '2026-5-1', end: '2026-6-30' },
+          { title: '压力测试', start: '2026-7-1', end: '2026-7-25' },
+        ],
+      },
+      { title: '性能优化专项', start: '2026-5-1', end: '2026-8-20' },
     ],
     [{ title: 'UI走查', start: '2026-8-1', end: '2026-8-5' }],
     [{ title: '提测修复阶段', start: '2026-9-1', end: '2026-10-15' }],
@@ -123,30 +206,33 @@ function generateMockData(): TableDataType[] {
 }
 
 onMounted(() => {
-  tableData.value = generateMockData()
+  rawData.value = generateMockData()
 })
 
 /**
- * 基于全年时间轴计算每个子任务的位置与宽度
- * leftPercent / widthPercent 相对于整年天数（365/366）
+ * 将日期转为百分比位置（按月份等比，与视觉 12 等分列宽对齐）
  */
-function getTaskBars(row: TableDataType): TaskBar[] {
-  if (!row.taskChildren || row.taskChildren.length === 0) return []
+const dateToPercent = (d: dayjs.Dayjs): number => {
+  const m = d.month()
+  const dayInMonth = d.date()
+  const daysInMonth = d.daysInMonth()
+  return ((m + (dayInMonth - 1) / daysInMonth) / 12) * 100
+}
 
+/** 将一组 TaskChild 转为原始（年度坐标）TaskBar 数组，不做泳道分配 */
+const computeRawBars = (children: TaskChild[]): TaskBar[] => {
   const yearStart = dayjs(`${year.value}-01-01`)
   const yearEnd = dayjs(`${year.value}-12-31`)
-  const daysInYear = yearEnd.diff(yearStart, 'day') + 1
 
-  return row.taskChildren.map((child) => {
-    const childStart = dayjs(child.start)
-    const childEnd = dayjs(child.end)
+  return children.map((child) => {
+    let s = dayjs(child.start)
+    let e = dayjs(child.end)
+    if (s.isBefore(yearStart)) s = yearStart
+    if (e.isAfter(yearEnd)) e = yearEnd
 
-    // 钳制到年度范围
-    const segStart = childStart.isAfter(yearStart) ? childStart : yearStart
-    const segEnd = childEnd.isBefore(yearEnd) ? childEnd : yearEnd
-
-    const leftPercent = (segStart.diff(yearStart, 'day') / daysInYear) * 100
-    const widthPercent = ((segEnd.diff(segStart, 'day') + 1) / daysInYear) * 100
+    const leftPercent = dateToPercent(s)
+    const widthPercent =
+      dateToPercent(e) - leftPercent + 100 / 12 / e.daysInMonth()
 
     return {
       title: child.title,
@@ -154,12 +240,93 @@ function getTaskBars(row: TableDataType): TaskBar[] {
       end: child.end,
       leftPercent,
       widthPercent,
+      lane: 0,
+      totalLanes: 1,
     }
   })
 }
+
+/** 为 bars 分配泳道 */
+const assignLanes = (bars: TaskBar[]): TaskBar[] => {
+  if (bars.length === 0) return bars
+  const sorted = bars
+    .map((b, i) => ({ ...b, _idx: i }))
+    .toSorted((a, b) => a.leftPercent - b.leftPercent)
+  const laneRightEnds: number[] = []
+  for (const bar of sorted) {
+    let assigned = false
+    for (let i = 0; i < laneRightEnds.length; i++) {
+      if (laneRightEnds[i] <= bar.leftPercent) {
+        bars[bar._idx].lane = i
+        laneRightEnds[i] = bar.leftPercent + bar.widthPercent
+        assigned = true
+        break
+      }
+    }
+    if (!assigned) {
+      bars[bar._idx].lane = laneRightEnds.length
+      laneRightEnds.push(bar.leftPercent + bar.widthPercent)
+    }
+  }
+  bars.forEach((b) => (b.totalLanes = laneRightEnds.length))
+  return bars
+}
+
+/** 获取主任务条（含泳道） */
+const getTaskBars = (row: TableDataType): TaskBar[] => {
+  if (!row.taskChildren || row.taskChildren.length === 0) return []
+  return assignLanes(computeRawBars(row.taskChildren))
+}
+
+/** 根据泳道数计算行高 */
+const getRowHeight = (row: TableDataType): number => {
+  const bars = getTaskBars(row)
+  const lanes = bars.length > 0 ? bars[0].totalLanes : 1
+  return lanes * 32 + 10
+}
+
+/** 展平为显示行：主行 + 子任务行 */
+const displayData = computed<DisplayRow[]>(() => {
+  const result: DisplayRow[] = []
+  for (const row of rawData.value) {
+    result.push({ ...row, rowType: 'main' })
+    // 获取改行所有任务
+    const bars = getTaskBars(row)
+    // 遍历每个任务
+    for (const bar of bars) {
+      // 找到当前任务
+      const parent = row.taskChildren.find((c) => c.title === bar.title)
+      // 若任务存在子任务
+      if (parent?.children && parent.children.length > 0) {
+        const rawChildren = computeRawBars(parent.children)
+        // 转为相对父任务的坐标
+        const relative: TaskBar[] = rawChildren.map((b) => ({
+          ...b,
+          leftPercent:
+            ((b.leftPercent - bar.leftPercent) / bar.widthPercent) * 100,
+          widthPercent: (b.widthPercent / bar.widthPercent) * 100,
+        }))
+        assignLanes(relative)
+        result.push({
+          t1: `└ ${bar.title}`,
+          t2: '',
+          t3: '',
+          d1: '',
+          g1: '',
+          taskChildren: [],
+          rowType: 'subtask',
+          parentLeft: bar.leftPercent,
+          parentWidth: bar.widthPercent,
+          subtaskBars: relative,
+        })
+      }
+    }
+  }
+  return result
+})
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 /* ========= 列头：月份刻度 ========= */
 .timeline-header {
   display: flex;
@@ -181,7 +348,6 @@ function getTaskBars(row: TableDataType): TaskBar[] {
 .timeline-row {
   position: relative;
   width: 100%;
-  height: 42px;
   box-sizing: border-box;
 }
 
@@ -212,7 +378,7 @@ function getTaskBars(row: TableDataType): TaskBar[] {
 .task-bar {
   position: absolute;
   top: 0;
-  height: 100%;
+  height: 28px;
   border-radius: 4px;
   background: linear-gradient(135deg, #409eff, #66b1ff);
   display: flex;
@@ -243,6 +409,43 @@ function getTaskBars(row: TableDataType): TaskBar[] {
   user-select: none;
 }
 
+/* ========= 子任务行 ========= */
+.subtask-row {
+  box-sizing: border-box;
+  padding: 2px 0;
+}
+
+.subtask-scroll-inner {
+  position: relative;
+  width: 100%;
+}
+
+.subtask-bar {
+  position: absolute;
+  height: 22px;
+  border-radius: 3px;
+  background: linear-gradient(135deg, #e6a23c, #f0c78a);
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  box-sizing: border-box;
+  cursor: pointer;
+  min-width: 4px;
+  transition:
+    box-shadow 0.2s,
+    filter 0.2s;
+
+  &:hover {
+    box-shadow: 0 2px 6px rgba(230, 162, 60, 0.45);
+    filter: brightness(1.08);
+    z-index: 2;
+  }
+
+  .task-bar-text {
+    font-size: 11px;
+  }
+}
+
 /* Tooltip 内容 */
 .tooltip-content {
   font-size: 13px;
@@ -258,12 +461,17 @@ function getTaskBars(row: TableDataType): TaskBar[] {
     font-size: 12px;
   }
 }
-</style>
 
-<style lang="less">
-/* 去掉全局表格单元格的默认内边距，让时间轴占满 */
-.el-table td.el-table__cell {
-  padding: 0 !important;
-  box-sizing: border-box;
+/* 穿透 Element Plus 表格单元格，去掉默认内边距 */
+:deep() {
+  .el-table td.el-table__cell,
+  .el-table th.el-table__cell {
+    padding: 0 !important;
+    box-sizing: border-box;
+
+    .cell {
+      padding: 0 !important;
+    }
+  }
 }
 </style>

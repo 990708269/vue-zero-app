@@ -8,8 +8,8 @@
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
     "deploy": "npm run build && gh-pages -d dist",
-    "postinstall": "husky install",
-    "init:husky": "npm run postinstall && node -e \"require('fs').writeFileSync('.husky/pre-commit','npx lint-staged')\"",
+    "prepare": "husky install",
+    "init:husky": "npm run prepare && node -e \"require('fs').writeFileSync('.husky/pre-commit','npx lint-staged')\"",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "lint": "oxlint",
@@ -18,7 +18,10 @@
   "dependencies": {
     "@iconify/utils": "^3.1.3",
     "@unocss/reset": "^66.7.0",
+    "animate.css": "^4.1.1",
+    "crypto-js": "^4.2.0",
     "dayjs": "^1.11.20",
+    "diff-match-patch": "^1.0.5",
     "element-plus": "^2.14.1",
     "unocss-preset-advance-gradients": "^0.0.2",
     "unocss-preset-animations": "^1.3.0",
@@ -28,8 +31,11 @@
     "unocss-preset-scrollbar": "^4.0.0",
     "unocss-preset-tailwindcss-motion": "^4.1.0",
     "vue": "^3.5.34",
+    "vue-form-create": "^1.2.12",
     "vue-hooks-plus": "^2.4.3",
-    "vue-router": "^5.1.0"
+    "vue-router": "^5.1.0",
+    "xgplayer": "^3.0.24",
+    "xgplayer-mp4": "^3.0.24"
   },
   "devDependencies": {
     "@types/node": "latest",
@@ -42,6 +48,8 @@
     "lint-staged": "^17.0.4",
     "oxfmt": "^0.49.0",
     "oxlint": "^1.64.0",
+    "sass-embedded": "^1.100.0",
+    "terser": "^5.48.0",
     "typescript": "~6.0.2",
     "unocss": "^66.7.0",
     "unplugin-auto-import": "^21.0.0",
