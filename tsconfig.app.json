@@ -18,7 +18,7 @@
   },
   // 新增这一段，放在根层级
   "vueCompilerOptions": {
-    "plugins": ["unocss/volar"]
+    // "plugins": ["unocss/volar"]
   },
   "include": [
     "src/**/*.ts",

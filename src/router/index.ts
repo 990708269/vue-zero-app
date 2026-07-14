@@ -9,7 +9,8 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory('/vue-zero-app/'),
+  // 保持和vite.config.ts中base一致
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 })
 

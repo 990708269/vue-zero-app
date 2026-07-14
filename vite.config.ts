@@ -20,6 +20,11 @@ export default defineConfig({
     }),
   ],
   base: '/vue-zero-app/',
+  build: {
+    // 输出目录改为 dist/vue-zero-app
+    outDir: 'dist/vue-zero-app',
+    emptyOutDir: true,
+  },
   resolve: {
     alias: {
       // 配置别名 @ 指向 src 目录
