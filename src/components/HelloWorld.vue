@@ -1,5 +1,15 @@
 <template>
-  <div class="container flex-c mt-10 relative">
+  <div class="container flex-c flex-col mt-10 relative flex-wrap">
+    <!-- 右上角按钮 -->
+    <el-space wrap class="mb-8">
+      <el-button type="success" @click="jump('/test1')"
+        >跳转到 /test1</el-button
+      >
+      <el-button type="success" @click="jump('/universe')"
+        >跳转到 /universe</el-button
+      >
+    </el-space>
+
     <el-space wrap class="p-10 border border-dashed border-pink-400">
       <div>
         <div class="text-2xl mb-2">ColorPickerPanel 颜色选择器面板</div>
@@ -12,18 +22,13 @@
       <el-button type="warning" @click="increment">{{ count }}</el-button>
       <el-button type="danger" @click="increment">{{ count }}</el-button>
     </el-space>
-
-    <!-- 右上角按钮 -->
-    <el-button type="success" @click="jump" class="absolute top-0 right-20"
-      >跳转到 /test1</el-button
-    >
   </div>
 </template>
 
 <script lang="ts" setup>
 const router = useRouter()
-const jump = () => {
-  router.push('/test1')
+const jump = (path: string) => {
+  router.push(path)
 }
 const color = ref('#409EFF')
 

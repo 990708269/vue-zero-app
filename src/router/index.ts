@@ -6,6 +6,10 @@ import { createWebHistory, createRouter, type RouteRecordRaw } from 'vue-router'
 const routes = [
   { path: '/', component: () => import('@/components/HelloWorld.vue') },
   { path: '/test1', component: () => import('@/views/container/index.vue') },
+  {
+    path: '/universe',
+    component: () => import('@/views/universeIo/index.vue'),
+  },
 ]
 
 const router = createRouter({

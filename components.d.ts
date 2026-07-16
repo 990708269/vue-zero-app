@@ -12,6 +12,9 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     ElButton: typeof import('element-plus/es')['ElButton']
+    ElButtons: typeof import('element-plus/es')['ElButtons']
+    ElButtonss: typeof import('element-plus/es')['ElButtonss']
+    ElButtonsss: typeof import('element-plus/es')['ElButtonsss']
     ElColorPickerPanel: typeof import('element-plus/es')['ElColorPickerPanel']
     ElScrollbar: typeof import('element-plus/es')['ElScrollbar']
     ElSpace: typeof import('element-plus/es')['ElSpace']
