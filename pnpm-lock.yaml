@@ -17,6 +17,9 @@ importers:
       animate.css:
         specifier: ^4.1.1
         version: 4.1.1
+      artplayer:
+        specifier: ^5.4.0
+        version: 5.4.0
       crypto-js:
         specifier: ^4.2.0
         version: 4.2.0
@@ -1100,6 +1103,9 @@ packages:
     resolution: {integrity: sha512-HGyxoOTYUyCM6stUe6EJgnd4EoewAI7zMdfqO+kGjnlZmBDz/cR5pf8r/cR4Wq60sL/p0IkcjUEEPwS3GFrIyw==}
     engines: {node: '>=8'}
 
+  artplayer@5.4.0:
+    resolution: {integrity: sha512-2B+plbx8N2yNsjK4nJU3+EOG8TULm1LRZk/QPkWRAMEX2Ee/MSnZG/WJYz8kcoZxZuLKcQ3uXifqLuPxZOH29A==}
+
   ast-kit@2.1.2:
     resolution: {integrity: sha512-cl76xfBQM6pztbrFWRnxbrDm9EOqDr1BF6+qQnnDZG2Co2LjyUktkN9GTJfBAfdae+DbT2nJf2nCGAdDDN7W2g==}
     engines: {node: '>=20.18.0'}
@@ -1489,6 +1495,10 @@ packages:
   jsonfile@6.2.1:
     resolution: {integrity: sha512-zwOTdL3rFQ/lRdBnntKVOX6k5cKJwEc1HdilT71BWEu7J41gXIB2MRp+vxduPSwZJPWBxEzv4yH1wYLJGUHX4Q==}
 
+  kind-of@6.0.3:
+    resolution: {integrity: sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==}
+    engines: {node: '>=0.10.0'}
+
   less@4.6.4:
     resolution: {integrity: sha512-OJmO5+HxZLLw0RLzkqaNHzcgEAQG7C0y3aMbwtCzIUFZsLMNNq/1IdAdHEycQ58CwUO3jPTHmoN+tE5I7FQxNg==}
     engines: {node: '>=18'}
@@ -1718,6 +1728,9 @@ packages:
   onetime@7.0.0:
     resolution: {integrity: sha512-VXJjc87FScF88uafS3JllDgvAm+c/Slfz06lorj2uAY34rlUu0Nt+v8wreiImcrgAjjIHp1rXpTDlLOGw29WwQ==}
     engines: {node: '>=18'}
+
+  option-validator@2.0.6:
+    resolution: {integrity: sha512-tmZDan2LRIRQyhUGvkff68/O0R8UmF+Btmiiz0SmSw2ng3CfPZB9wJlIjHpe/MKUZqyIZkVIXCrwr1tIN+0Dzg==}
 
   oxc-parser@0.131.0:
     resolution: {integrity: sha512-SJ3/7ZPbgie8dr5Z9BI/M51zZbpXba+hRSG0MDzVwMW5CRQg2fjYE0jHGlLX4eeiibGgC/mzoDFKSDHwVZEHRQ==}
@@ -3226,6 +3239,10 @@ snapshots:
 
   array-union@2.1.0: {}
 
+  artplayer@5.4.0:
+    dependencies:
+      option-validator: 2.0.6
+
   ast-kit@2.1.2:
     dependencies:
       '@babel/parser': 7.29.7
@@ -3572,6 +3589,8 @@ snapshots:
     optionalDependencies:
       graceful-fs: 4.2.11
 
+  kind-of@6.0.3: {}
+
   less@4.6.4:
     dependencies:
       copy-anything: 3.0.5
@@ -3783,6 +3802,10 @@ snapshots:
   onetime@7.0.0:
     dependencies:
       mimic-function: 5.0.1
+
+  option-validator@2.0.6:
+    dependencies:
+      kind-of: 6.0.3
 
   oxc-parser@0.131.0:
     dependencies:

@@ -4,11 +4,29 @@ import { createWebHistory, createRouter, type RouteRecordRaw } from 'vue-router'
 // import AboutView from './AboutView.vue'
 
 const routes = [
-  { path: '/', component: () => import('@/components/HelloWorld.vue') },
-  { path: '/test1', component: () => import('@/views/container/index.vue') },
+  // 加上layout组件 src\layout\index.vue
   {
-    path: '/universe',
-    component: () => import('@/views/universeIo/index.vue'),
+    path: '/',
+    component: () => import('@/layout/index.vue'),
+    redirect: '/hello',
+    children: [
+      {
+        path: '/hello',
+        component: () => import('@/components/HelloWorld.vue'),
+      },
+      {
+        path: '/test1',
+        component: () => import('@/views/container/index.vue'),
+      },
+      {
+        path: '/universe',
+        component: () => import('@/views/universeIo/index.vue'),
+      },
+      {
+        path: '/video',
+        component: () => import('@/components/Video/index.vue'),
+      },
+    ],
   },
 ]
 

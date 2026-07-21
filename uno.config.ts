@@ -43,7 +43,7 @@ export default defineConfig({
       // 背景base：覆盖+居中+不重复（最常用的背景图基础样式）
       'bg-base': 'bg-[length:100%_100%] bg-no-repeat bg-fixed',
       // 边框base
-      'border-base': 'border border-solid',
+      'border-base': 'border border-solid border-pink-500',
       'border-chart': 'border-base border-violet-700',
       // grid base
       'grid-base': 'grid content-start gap-2',

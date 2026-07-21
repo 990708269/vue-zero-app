@@ -8,6 +8,9 @@
       <el-button type="success" @click="jump('/universe')"
         >跳转到 /universe</el-button
       >
+      <el-button type="success" @click="jump('/video')"
+        >跳转到 /video</el-button
+      >
     </el-space>
 
     <el-space wrap class="p-10 border border-dashed border-pink-400">

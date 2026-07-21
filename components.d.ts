@@ -11,6 +11,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ArtplayerVideo: typeof import('./src/components/Video/ArtplayerVideo.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElButtons: typeof import('element-plus/es')['ElButtons']
     ElButtonss: typeof import('element-plus/es')['ElButtonss']
@@ -24,5 +25,6 @@ declare module 'vue' {
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Video: typeof import('./src/components/Video/index.vue')['default']
   }
 }
