@@ -150,17 +150,16 @@ export default defineConfig({
   // },
   transformers: [transformerDirectives(), transformerVariantGroup()],
   // 全局样式,原始 CSS 注入（对应 Tailwind 的 @layer base 中的 border-color 重置）
-  // preflights: [
-  //   {
-  //     getCSS: () => `
-  //       *,
-  //       ::after,
-  //       ::before,
-  //       ::backdrop,
-  //       ::file-selector-button {
-  //         border-color: var(--color-gray-200, currentColor);
-  //       }
-  //     `
-  //   }
-  // ]
+  preflights: [
+    // {
+    //   // 集成daisyUI的CSS文件
+    //   getCSS: () => `
+    //     @layer base {
+    //       @import "daisyui/daisyui.css";
+    //     }
+    //   `,
+    // },
+  ],
+  // 把hover-3d、用到的工具类加入白名单，强制打包样式
+  // safelist: ['hover-3d'],
 })

@@ -26,6 +26,14 @@ const routes = [
         path: '/video',
         component: () => import('@/components/Video/index.vue'),
       },
+      {
+        path: '/daisy-ui',
+        component: () => import('@/views/daysyui/index.vue'),
+      },
+      {
+        path: '/relationGraph',
+        component: () => import('@/views/relationGraph/index.vue'),
+      },
     ],
   },
 ]

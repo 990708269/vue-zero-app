@@ -11,6 +11,12 @@
       <el-button type="success" @click="jump('/video')"
         >跳转到 /video</el-button
       >
+      <el-button type="success" @click="jump('/daisy-ui')"
+        >跳转到 /daisy-ui</el-button
+      >
+      <el-button type="success" @click="jump('/relationGraph')"
+        >跳转到 /relationGraph</el-button
+      >
     </el-space>
 
     <el-space wrap class="p-10 border border-dashed border-pink-400">

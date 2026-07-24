@@ -7,5 +7,6 @@ export default defineConfig({
   singleQuote: true,
   // 不要分号
   semi: false,
-  // 在对象字面量中打印括号
+  // 关键：让>和最后一个属性同行，不单独换行
+  bracketSameLine: true,
 })
